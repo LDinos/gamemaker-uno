@@ -177,7 +177,10 @@ function receive_packet(s_buffer) {
 				}
 				ds_list_destroy(new_cards)
 			} else with(obj_other_player) {
-				if (global.player_turn == player_id) my_cards += iend
+				if (global.player_turn == player_id) {
+					my_cards += iend
+					start_card_draw(iend, id)
+				}
 			}
 			obj_pile.pile_must_draw = 0
 			audio_play_sound(snd_pass,0, false)
