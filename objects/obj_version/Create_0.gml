@@ -1,2 +1,2 @@
 /// @description
-global.version = "0.3"
+global.version = "0.4"
