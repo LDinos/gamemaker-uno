@@ -2,10 +2,10 @@
 // https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
 function create_skip(){
 	var turn_index = global.player_turn
-	if global.player_turn_clockwise turn_index++
+	if (global.player_turn_clockwise) turn_index++
 	else turn_index--
-	if turn_index == (instance_number(obj_other_player) + instance_number(obj_other_player)) turn_index = 0
-	else if turn_index < 0 turn_index = instance_number(obj_other_player) + instance_number(obj_other_player) - 1
+	if turn_index == (get_num_players()) turn_index = 0
+	else if (turn_index < 0) turn_index = get_num_players() - 1
 	
 	var xx = room_width / 2
 	var yy = obj_my_player.y + 16

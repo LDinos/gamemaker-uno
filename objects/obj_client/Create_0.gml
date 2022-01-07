@@ -12,6 +12,9 @@
 #macro NET_ALREADY_STARTED 10
 #macro NET_BLACKLISTED 11
 #macro NET_DISCONNECT_CHANGE_TURN 12
+#macro NET_RULE_UPDATE 13
+#macro NET_GET_RULES 14
+#macro NET_GET_INTRODUCTION 15
 
 network_set_config(network_config_connect_timeout,4000)
 client_socket = network_create_socket(network_socket_tcp);
@@ -24,14 +27,8 @@ if (server < 0)
 		network_destroy(client_socket)
 		room_goto(rm_menu)
     }
-else
-    {
-		buffer_seek(buffer,buffer_seek_start,0)
-		buffer_write(buffer,buffer_u8,NET_GIVE_NAME)
-		buffer_write(buffer,buffer_string,global.my_name)
-		buffer_write(buffer,buffer_string,global.version)
-		network_send_packet(client_socket,buffer,buffer_tell(buffer))
-    }
+	
+//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\
 
 function send_played_card(card) {
 	var gameover = ds_list_empty(obj_my_player.my_cards)
@@ -42,45 +39,74 @@ function send_played_card(card) {
 	network_send_packet(client_socket,buffer,buffer_tell(buffer))	
 }
 
+function update_players(s_buffer) {
+	instance_destroy(obj_start)
+	var num_players = buffer_read(s_buffer,buffer_u8)
+	var whoami = buffer_read(s_buffer,buffer_u8)
+	var card_n = []
+	global.my_player_id = whoami
+	instance_destroy(obj_other_player)
+	ds_list_clear(global.player_names)
+	for(var i = 0; i < num_players; i++) {
+		var p = buffer_read(s_buffer,buffer_string)
+		card_n[i] = buffer_read(s_buffer,buffer_u8)
+		ds_list_add(global.player_names, p)
+	}
+	var add_player_index = whoami
+	var k = 1;
+	for(var i = 0; i < num_players; i++) {
+		if (add_player_index != whoami) {
+			var player = instance_create_depth(k*room_width/(num_players), 16,-1, obj_other_player)
+			player.player_id = add_player_index
+			player.my_cards = card_n[add_player_index]
+			player.x -= player.sprite_width/2
+			k++
+		}
+		add_player_index++
+		if (add_player_index == num_players) add_player_index = 0
+	}
+	if (global.game_started && instance_number(obj_other_player) == 0) {
+		stop_game()
+	}
+	if (whoami == 0 && !global.game_started) instance_create_depth(obj_deck.x,obj_deck.y + obj_deck.sprite_height, -1, obj_start)
+}
+
 function send_draw_cards() {
 	buffer_seek(buffer,buffer_seek_start,0)
 	buffer_write(buffer,buffer_u8,NET_DRAW_CARDS)
 	network_send_packet(client_socket,buffer,buffer_tell(buffer))
 }
 
+function send_updated_rules() {
+	buffer_seek(buffer,buffer_seek_start,0)
+	buffer_write(buffer,buffer_u8,NET_RULE_UPDATE)
+	buffer_write(buffer,buffer_bool,global.rules.draw_until_play)
+	buffer_write(buffer,buffer_bool,global.rules.allow_stacks)
+	buffer_write(buffer,buffer_bool,global.rules.fourstack_on_two)
+	network_send_packet(client_socket,buffer,buffer_tell(buffer))
+}
+
+function update_rules(s_buffer) {
+	global.rules.draw_until_play = buffer_read(s_buffer,buffer_bool)
+	global.rules.allow_stacks = buffer_read(s_buffer,buffer_bool)
+	global.rules.fourstack_on_two = buffer_read(s_buffer,buffer_bool)
+}
+
 function receive_packet(s_buffer) {
 	var type = buffer_read(s_buffer,buffer_u8)
 	switch(type) {
+		case NET_GET_INTRODUCTION:
+			buffer_seek(buffer,buffer_seek_start,0)
+			buffer_write(buffer,buffer_u8,NET_GIVE_NAME)
+			buffer_write(buffer,buffer_string,global.my_name)
+			buffer_write(buffer,buffer_string,global.version)
+			network_send_packet(client_socket,buffer,buffer_tell(buffer))
+			break;
+		case NET_GET_RULES:
+			update_rules(s_buffer)
+			break;
 		case NET_GET_UPDATE_PLAYERS:
-			instance_destroy(obj_start)
-			var num_players = buffer_read(s_buffer,buffer_u8)
-			var whoami = buffer_read(s_buffer,buffer_u8)
-			card_n = []
-			global.my_player_id = whoami
-			instance_destroy(obj_other_player)
-			ds_list_clear(global.player_names)
-			for(var i = 0; i < num_players; i++) {
-				var p = buffer_read(s_buffer,buffer_string)
-				card_n[i] = buffer_read(s_buffer,buffer_u8)
-				ds_list_add(global.player_names, p)
-			}
-			var add_player_index = whoami
-			var k = 1;
-			for(var i = 0; i < num_players; i++) {
-				if (add_player_index != whoami) {
-					var player = instance_create_depth(k*room_width/(num_players), 16,-1, obj_other_player)
-					player.player_id = add_player_index
-					player.my_cards = card_n[add_player_index]
-					player.x -= player.sprite_width/2
-					k++
-				}
-				add_player_index++
-				if (add_player_index == num_players) add_player_index = 0
-			}
-			if (global.game_started && instance_number(obj_other_player) == 0) {
-				stop_game()
-			}
-			if (whoami == 0 && !global.game_started) instance_create_depth(obj_deck.x,obj_deck.y + obj_deck.sprite_height, -1, obj_start)
+			update_players(s_buffer)
 			break;
 		case NET_GET_INITIAL_CARDS:
 			stop_game()
@@ -109,7 +135,11 @@ function receive_packet(s_buffer) {
 				if (get_card_number(card) == SKIP) {how_much = 2; create_skip()}
 				else if (get_card_number(card) == PLUSTWO) {obj_pile.pile_must_draw += 2; create_plustext()}
 				else if (get_card_number(card) == PLUSFOURCOLOR) {obj_pile.pile_must_draw += 4;  create_plustext()}
-				else if (get_card_number(card) == INVERT) {global.player_turn_clockwise = !global.player_turn_clockwise; audio_play_sound(snd_invert,0,false)}
+				else if (get_card_number(card) == INVERT) {
+					global.player_turn_clockwise = !global.player_turn_clockwise; 
+					audio_play_sound(snd_invert,0,false)
+					if (instance_number(obj_other_player) == 1) {how_much = 2; create_skip()}
+				}
 				repeat(how_much) next_turn()
 			}
 			else {
@@ -127,6 +157,10 @@ function receive_packet(s_buffer) {
 				var new_cards = ds_list_create()
 				for(var i = 0; i < iend; i++) {
 					var card = buffer_read(s_buffer, buffer_u8)
+					if (iend == 1) && (global.rules.draw_until_play) {
+						if !can_play_card(card) {with(obj_deck) alarm[0] = 50}
+						else obj_my_player.i_played = false
+					}
 					obj_my_player.add_card(card)
 					ds_list_add(new_cards, card)
 				}
@@ -147,7 +181,7 @@ function receive_packet(s_buffer) {
 			}
 			obj_pile.pile_must_draw = 0
 			audio_play_sound(snd_pass,0, false)
-			next_turn()
+			if (!global.rules.draw_until_play || iend > 1) next_turn()
 			break;
 		case NET_DISCONNECT_CHANGE_TURN:
 			global.player_turn = buffer_read(s_buffer,buffer_u8)
