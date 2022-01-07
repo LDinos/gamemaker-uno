@@ -10,6 +10,18 @@ card_width = sprite_get_width(spr_cards) * card_scale
 my_cards = ds_list_create()
 card_glow = []
 
+//shade to use when it's the player's turn
+card_base_shade = 255
+//shade to interpolate to when it isn't the player's turn
+card_dim_shade = 180
+//current shade
+card_shade = 255
+
+//lower cards when it isnt player's turn
+card_drop_offset = 20
+card_y_offset = 0
+
+
 y = room_height - sprite_get_height(spr_cards)*card_scale
 
 function add_card(card) {
