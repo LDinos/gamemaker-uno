@@ -35,6 +35,8 @@
   },
   "resourceVersion": "1.0",
   "name": "obj_ip_box",
-  "tags": [],
+  "tags": [
+    "text",
+  ],
   "resourceType": "GMObject",
 }

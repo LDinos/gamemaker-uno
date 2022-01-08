@@ -8,15 +8,3 @@ ini_close()
 box_length = 256
 box_height = 32
 x = (room_width/2) - (box_length/2)
-
-function is_letter() {
-	return keyboard_lastkey >= 65 && keyboard_lastkey <= 90
-}
-
-function is_number() {
-	return keyboard_lastkey >= 48 && keyboard_lastkey <= 57
-}
-
-function is_dot() {
-	return keyboard_lastkey == 190
-}
