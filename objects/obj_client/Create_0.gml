@@ -15,6 +15,8 @@
 #macro NET_RULE_UPDATE 13
 #macro NET_GET_RULES 14
 #macro NET_GET_INTRODUCTION 15
+#macro NET_SEND_MESSAGE 16
+#macro NET_GET_MESSAGE 17
 #macro NET_MAX_CARDS 30
 
 network_set_config(network_config_connect_timeout,4000)
@@ -54,6 +56,9 @@ function receive_packet(s_buffer) {
 			break;
 		case NET_DISCONNECT_CHANGE_TURN:
 			disconnection_update(s_buffer)
+			break;
+		case NET_GET_MESSAGE:
+			retrieve_message(s_buffer)
 			break;
 		case SERVER_EXIT:
 		case NET_WRONG_VER:
@@ -230,4 +235,17 @@ function get_drawn_cards(s_buffer) {
 	obj_pile.pile_must_draw = 0
 	audio_play_sound(snd_pass,0, false)
 	if (!global.rules.draw_until_play || iend > 1) next_turn()
+}
+
+function send_message(text) {
+	buffer_seek(buffer,buffer_seek_start,0)
+	buffer_write(buffer,buffer_u8,NET_SEND_MESSAGE)
+	buffer_write(buffer,buffer_string,text)
+	network_send_packet(client_socket,buffer,buffer_tell(buffer))
+}
+
+function retrieve_message(s_buffer) {
+	var type = buffer_read(s_buffer,buffer_bool)
+	var text = buffer_read(s_buffer,buffer_string)
+	obj_chat_box.add_line(text, type)
 }

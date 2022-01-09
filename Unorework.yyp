@@ -8,6 +8,7 @@
     {"id":{"name":"stop_game","path":"scripts/stop_game/stop_game.yy",},"order":3,},
     {"id":{"name":"snd_start","path":"sounds/snd_start/snd_start.yy",},"order":7,},
     {"id":{"name":"snd_plussomething","path":"sounds/snd_plussomething/snd_plussomething.yy",},"order":3,},
+    {"id":{"name":"snd_alarm","path":"sounds/snd_alarm/snd_alarm.yy",},"order":9,},
     {"id":{"name":"fnt_default","path":"fonts/fnt_default/fnt_default.yy",},"order":0,},
     {"id":{"name":"snd_gameover","path":"sounds/snd_gameover/snd_gameover.yy",},"order":6,},
     {"id":{"name":"spr_join","path":"sprites/spr_join/spr_join.yy",},"order":2,},
