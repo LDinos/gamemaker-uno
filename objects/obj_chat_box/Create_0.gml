@@ -25,12 +25,67 @@ function add_line(text, type) {
 		log_height : string_height(text)
 	}
 	var str = ""
+	
+	
+	//text wrapping fixes
+	var x_prog = 0
+	var print_prog = 1
+	
+	while print_prog <= string_count {
+		
+		var print_word_prog = print_prog
+		//iterate until the next space char
+		while print_word_prog <= string_length(text) and string_char_at(text, print_word_prog) != " " {
+			print_word_prog += 1	
+		}
+		
+		//get the slice from the current character to the end of the word
+		var word_drawing_next = string_copy(text, print_prog, print_word_prog - print_prog)
+		
+		//if the word will expand past the x width but the word isnt so massive that it will expand over the x width even on a newline
+		if x_prog + string_width(word_drawing_next) > box_length and string_width(word_drawing_next) < box_length {
+			//reset to the start of the next line
+			x_prog = 0
+			str += "\n"
+		}
+		
+		
+		
+		
+		var char_drawing_next = string_char_at(text, print_prog)
+		
+		//if the next character will go out of bounds
+		if x_prog + string_width(char_drawing_next) > box_length {
+			//reset to the start of the next line
+			x_prog = 0
+			str += "\n"
+		}
+		
+		//if we are going to draw a space at the start of a newline
+		if x_prog = 0 and char_drawing_next = " " {
+			//uhhh, dont do that cuz it looks ugly
+			char_drawing_next = ""
+		}
+		
+		str += char_drawing_next
+		x_prog += string_width(char_drawing_next) //offset the x coordinate by the width of the character drawn
+		
+		print_prog += 1
+	}
+	
+	/* old code
 	for(var i = 0; i < string_length(text); i++) {
 		if string_width( str + string_char_at(text, i+1)) >= box_length {
 			str += "\n"
 		}
 		str += string_char_at(text, i+1)
 	}
+	*/
+	
+	
+	
+	
+	
 	strct.log_text = str
 	strct.log_height = string_height(str)
 	array_push(log, strct)
