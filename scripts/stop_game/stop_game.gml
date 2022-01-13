@@ -4,6 +4,7 @@ function stop_game() {
 	instance_destroy(obj_text_plusnumber)
 	instance_destroy(obj_choose_color)
 	instance_destroy(obj_new_card)
+	instance_destroy(obj_stop)
 	global.player_turn = -1 //whose turn is it?
 	global.player_turn_clockwise = true
 	global.game_started = false

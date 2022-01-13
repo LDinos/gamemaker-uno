@@ -17,7 +17,8 @@
 #macro NET_GET_INTRODUCTION 15
 #macro NET_SEND_MESSAGE 16
 #macro NET_GET_MESSAGE 17
-#macro NET_MAX_CARDS 30
+#macro NET_STOP_GAME 18
+#macro MAX_CARDS 30
 
 network_set_config(network_config_connect_timeout,4000)
 client_socket = network_create_socket(network_socket_tcp);
@@ -59,6 +60,10 @@ function receive_packet(s_buffer) {
 			break;
 		case NET_GET_MESSAGE:
 			retrieve_message(s_buffer)
+			break;
+		case NET_STOP_GAME:
+			stop_game()
+			if (global.my_player_id == 0) instance_create_depth(obj_deck.x,obj_deck.y + obj_deck.sprite_height, -1, obj_start)
 			break;
 		case SERVER_EXIT:
 		case NET_WRONG_VER:
@@ -158,6 +163,7 @@ function update_rules(s_buffer) {
 
 function get_initial_cards(s_buffer) {
 	stop_game()
+	if (global.my_player_id == 0) instance_create_depth(obj_deck.x,obj_deck.y + obj_deck.sprite_height, -1, obj_stop)
 	audio_play_sound(snd_start,0,false)
 	global.game_started = true
 	global.player_turn = buffer_read(s_buffer,buffer_u8)
