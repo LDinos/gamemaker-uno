@@ -163,7 +163,7 @@ function update_rules(s_buffer) {
 
 function get_initial_cards(s_buffer) {
 	stop_game()
-	if (global.my_player_id == 0) instance_create_depth(obj_rules_box.x - obj_rules_box.box_length/2, obj_rules_box.y, -1, obj_stop)
+	if (global.my_player_id == 0) instance_create_depth(obj_rules_box.x, obj_rules_box.y, -1, obj_stop)
 	audio_play_sound(snd_start,0,false)
 	global.game_started = true
 	global.player_turn = buffer_read(s_buffer,buffer_u8)
