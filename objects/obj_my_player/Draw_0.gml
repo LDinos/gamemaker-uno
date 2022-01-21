@@ -30,4 +30,4 @@ for(var i = 0; i < card_size; i++) {
 }
 draw_set_halign(fa_left)
 draw_set_valign(fa_middle)
-draw_text_color(x,y-64,global.my_name, c, c, c, c, 1)
+draw_text_color(x,y-48,global.my_name, c, c, c, c, 1)

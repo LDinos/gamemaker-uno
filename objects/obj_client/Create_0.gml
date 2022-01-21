@@ -129,6 +129,8 @@ function update_players(s_buffer) {
 			player.player_id = add_player_index
 			player.my_cards = card_n[add_player_index]
 			player.x -= player.sprite_width/2
+			player.row_index = k
+			player.num_players = num_players
 			k++
 		}
 		add_player_index++

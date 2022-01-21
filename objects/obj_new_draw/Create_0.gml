@@ -1,8 +1,8 @@
 /// @description
 audio_play_sound(snd_card_throw,false,0)
 image_speed = 0
-card_scale_default = 0.4
-card_scale_end = 0.3
+card_scale_default = obj_deck.card_scale
+card_scale_end = obj_deck.card_scale*0.75
 image_xscale = card_scale_default
 image_yscale = image_xscale
 
