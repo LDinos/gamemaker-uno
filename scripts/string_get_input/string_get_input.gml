@@ -14,7 +14,11 @@ function is_space() {
 	return keyboard_lastkey == vk_space
 }
 
-function string_get_input(text = "", allow_letters, allow_numbers, allow_space, allow_dots, max_length){
+function is_symbol() {
+	return (keyboard_lastkey >= K_COLON && keyboard_lastkey <= K_QUOTE)
+}
+
+function string_get_input(text = "", allow_letters, allow_numbers, allow_space, allow_dots, allow_symbols, max_length){
 	if (global.is_phone) {
 		if keyboard_check_pressed(vk_enter) {
 			keyboard_virtual_hide();
@@ -33,7 +37,8 @@ function string_get_input(text = "", allow_letters, allow_numbers, allow_space, 
 		if (!allow_numbers && can_type) can_type = !is_number()
 		if (!allow_dots && can_type) can_type = !is_dot()
 		if (!allow_space && can_type) can_type = !is_space()
-		if !is_dot() && !is_number() && !is_letter() && !is_space() can_type = false
+		if (!allow_symbols && can_type) can_type = !is_symbol()
+		if !is_dot() && !is_number() && !is_letter() && !is_space() && !is_symbol() can_type = false
 	
 		if keyboard_check_pressed(vk_anykey) && can_type {
 			if (string_length(text) < max_length) text += char

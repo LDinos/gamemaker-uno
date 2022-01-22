@@ -1,4 +1,5 @@
 /// @description
+draw_sprite_ext(spr_white_pixel,0,0,0,room_width,room_height,0,c_black,0.4)
 var c = c_black
 draw_rectangle_color(x-2,y-2,x+rectangle_full_length+2,y+rectangle_full_length+2,c,c,c,c,false)
 var c = c_blue

@@ -26,8 +26,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Objects",
-    "path": "folders/Objects.yy",
+    "name": "Rules",
+    "path": "folders/Objects/Rules.yy",
   },
   "resourceVersion": "1.0",
   "name": "obj_rule",

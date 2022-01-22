@@ -1,20 +1,26 @@
 /// @description
 #macro LOG_CHAT 0
 #macro LOG_ALERT 1
+#macro MAX_LINES 20
+#macro MAX_CHARS_PER_LINE 35
 box_length = 256
 box_height = 256
 type_box_height = 24
 on_focus = false
 alpha_on_focus = 1
-alpha_on_defocus = 0.2
+alpha_on_defocus = 0.5
 box_color = c_gray
 type_box_color = c_dkgray
 text = ""
 blink = ""
+text_max_length = 100
 backspace_lag = 0
 log = []
 message_cooldown_baseval = 25
 message_cooldown = 0
+
+surf_chat_text = surface_create(box_length, box_height)
+surf_type_text = surface_create(box_length, type_box_height)
 
 function add_line(text, type) {
 	audio_play_sound(snd_alarm,0,false)
@@ -24,69 +30,43 @@ function add_line(text, type) {
 		log_color : c,
 		log_height : string_height(text)
 	}
-	var str = ""
-	
-	
-	//text wrapping fixes
-	var x_prog = 0
-	var print_prog = 1
-	
-	while print_prog <= string_count {
-		
-		var print_word_prog = print_prog
-		//iterate until the next space char
-		while print_word_prog <= string_length(text) and string_char_at(text, print_word_prog) != " " {
-			print_word_prog += 1	
-		}
-		
-		//get the slice from the current character to the end of the word
-		var word_drawing_next = string_copy(text, print_prog, print_word_prog - print_prog)
-		
-		//if the word will expand past the x width but the word isnt so massive that it will expand over the x width even on a newline
-		if x_prog + string_width(word_drawing_next) > box_length and string_width(word_drawing_next) < box_length {
-			//reset to the start of the next line
-			x_prog = 0
-			str += "\n"
-		}
-		
-		
-		
-		
-		var char_drawing_next = string_char_at(text, print_prog)
-		
-		//if the next character will go out of bounds
-		if x_prog + string_width(char_drawing_next) > box_length {
-			//reset to the start of the next line
-			x_prog = 0
-			str += "\n"
-		}
-		
-		//if we are going to draw a space at the start of a newline
-		if x_prog = 0 and char_drawing_next = " " {
-			//uhhh, dont do that cuz it looks ugly
-			char_drawing_next = ""
-		}
-		
-		str += char_drawing_next
-		x_prog += string_width(char_drawing_next) //offset the x coordinate by the width of the character drawn
-		
-		print_prog += 1
-	}
-	
-	/* old code
-	for(var i = 0; i < string_length(text); i++) {
-		if string_width( str + string_char_at(text, i+1)) >= box_length {
-			str += "\n"
-		}
-		str += string_char_at(text, i+1)
-	}
-	*/
-	
-	
-	
-	
-	
-	strct.log_text = str
-	strct.log_height = string_height(str)
 	array_push(log, strct)
+	if (array_length(log) > MAX_LINES) array_delete(log,0,1)
+}
+
+function draw_type_text(a) {
+	surface_set_target(surf_type_text)
+		draw_set_alpha(a)
+		var c = type_box_color
+		var h = string_height(text) == 0 ? type_box_height : string_height(text)
+		draw_rectangle_color(0, 0, box_length, h, c,c,c,c, false)
+		draw_set_font(fnt_default)
+		draw_set_halign(fa_right)
+		draw_set_valign(fa_top)
+		draw_text(box_length-8,0,text+blink)
+		draw_set_alpha(1)
+	surface_reset_target()
+	draw_surface(surf_type_text, x, y+box_height)
+}
+
+function draw_chat_text(a) {
+	surface_set_target(surf_chat_text)
+		draw_set_alpha(a)
+		var c = box_color
+		draw_rectangle_color(0, 0, box_length, box_height, c,c,c,c, false)
+		draw_set_halign(fa_left)
+		draw_set_valign(fa_top)
+		var yy = box_height;
+		for(var i = array_length(log)-1; i>=0; i--) {
+			var log_strct = log[i]
+			var log_c = log_strct.log_color
+			var log_t = log_strct.log_text
+			var log_h = log_strct.log_height*(1 + (string_length(log_t) div MAX_CHARS_PER_LINE))
+			var w = box_length
+			yy -= log_h
+			draw_text_ext_colour(2,yy,log_t, 16, w, log_c, log_c, log_c, log_c, a)
+		}
+		draw_set_alpha(1)
+	surface_reset_target()
+	draw_surface(surf_chat_text, x, y)
 }
