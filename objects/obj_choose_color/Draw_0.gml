@@ -10,3 +10,4 @@ c = c_red
 draw_rectangle_color(x,y+rectangle_full_length/2,x+rectangle_full_length/2,y+rectangle_full_length,c,c,c,c,false)
 c = c_yellow
 draw_rectangle_color(x+rectangle_full_length/2,y+rectangle_full_length/2,x+rectangle_full_length,y+rectangle_full_length,c,c,c,c,false)
+draw_sprite(spr_cancel,0,x,y+rectangle_full_length)

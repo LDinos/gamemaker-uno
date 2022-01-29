@@ -35,6 +35,7 @@
   "inheritCode": false,
   "instanceCreationOrder": [
     {"name":"inst_1CD19093","path":"rooms/rm_gameplay/rm_gameplay.yy",},
+    {"name":"inst_12DA20CC","path":"rooms/rm_gameplay/rm_gameplay.yy",},
     {"name":"inst_6DB11621","path":"rooms/rm_gameplay/rm_gameplay.yy",},
     {"name":"inst_BCE5E63","path":"rooms/rm_gameplay/rm_gameplay.yy",},
     {"name":"inst_7E0BA601","path":"rooms/rm_gameplay/rm_gameplay.yy",},
@@ -43,7 +44,6 @@
     {"name":"inst_60A5BEC3","path":"rooms/rm_gameplay/rm_gameplay.yy",},
     {"name":"inst_511548CB","path":"rooms/rm_gameplay/rm_gameplay.yy",},
     {"name":"inst_85F2D6","path":"rooms/rm_gameplay/rm_gameplay.yy",},
-    {"name":"inst_12DA20CC","path":"rooms/rm_gameplay/rm_gameplay.yy",},
     {"name":"inst_60D8FB85","path":"rooms/rm_gameplay/rm_gameplay.yy",},
   ],
   "inheritCreationOrder": false,

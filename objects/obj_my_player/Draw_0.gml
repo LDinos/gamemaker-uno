@@ -30,4 +30,5 @@ for(var i = 0; i < card_size; i++) {
 }
 draw_set_halign(fa_left)
 draw_set_valign(fa_middle)
-draw_text_color(x,y-48,global.my_name, c, c, c, c, 1)
+var card_len = ds_list_size(my_cards)
+draw_text_color(x,y-48,global.my_name + " (" + string(card_len) + " cards)", c, c, c, c, 1)

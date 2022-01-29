@@ -11,3 +11,7 @@ if (mouse_x >= x && mouse_x <= x + rectangle_full_length)
 	obj_my_player.play_card(card_pos)
 	instance_destroy()
 }
+else if (mouse_x >= x  && mouse_x <= x + rectangle_full_length)
+&& (mouse_y > y + rectangle_full_length && mouse_y <= y + rectangle_full_length + sprite_get_height(spr_cancel)) {
+	instance_destroy()
+}
